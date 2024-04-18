@@ -1,14 +1,21 @@
-﻿using UserApp.Domain.Commons;
+﻿using System.Linq.Expressions;
+using UserApp.Domain.Commons;
 
 namespace UserApp.Data.Repositories;
 
 public interface IRepository<T> where T : Auditable
 {
-    Task<T> InsertAcync(T entity);
-    Task<T> UpdateAcync(T entity);
-    Task<T> DeleteAcync(T entity);
-    Task<T> DropAcync(T entity);
-    Task<T> SelectAcync(long id);
-    Task<IEnumerable<T>> SelectAllAsEnumerableAsync(T entity);
-    Task<IQueryable<T>> SelectAllAsQueryable(T entity);
+    Task<T> InsertAsync(T entity);
+    Task<T> UpdateAsync(T entity);
+    Task<T> DeleteAsync(T entity);
+    Task<T> DropAsync(T entity);
+    Task<T> SelectAsync(Expression<Func<T, bool>> expression, string[] includes = null);
+    Task<IEnumerable<T>> SelectAsEnumerableAsync(
+        Expression<Func<T, bool>> expression = null,
+        string[] includes = null,
+        bool isTracked = true);
+    IQueryable<T> SelectAsQueryable(
+        Expression<Func<T, bool>> expression = null,
+        string[] includes = null,
+        bool isTracked = true);
 }
