@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using UserApp.Domain.Enitites.Users;
+﻿using UserApp.Domain.Enitites.Users;
 using UserApp.Domain.Enitites.Commons;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserApp.Data.Contexts;
 
