@@ -7,18 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\" />
-    <Folder Include="Extensions\" />
     <Folder Include="Configurations\" />
     <Folder Include="Services\Users\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\UserApp.Data\UserApp.Data.csproj" />
     <ProjectReference Include="..\UserApp.Domain\UserApp.Domain.csproj" />
   </ItemGroup>
 

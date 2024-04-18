@@ -1,21 +1,47 @@
-﻿using UserApp.Service.DTOs.Assets;
+﻿using AutoMapper;
+using UserApp.Service.Helpers;
+using UserApp.Data.UnitOfWorks;
+using UserApp.Service.Extensions;
+using UserApp.Service.Exceptions;
+using UserApp.Service.DTOs.Assets;
+using UserApp.Domain.Enitites.Commons;
 
 namespace UserApp.Service.Services.Assets;
 
-public class AssetService : IAssetService
+public class AssetService(IMapper mapper, IUnitOfWork unitOfWork) : IAssetService
 {
-    public Task<bool> DeleteAsync(long id)
+    public async Task<AssetViewModel> UploadAsync(AssetCreateModel model)
     {
-        throw new NotImplementedException();
+        var assetData = await FileHelper.CreateFileAsync(model.File, model.FileType);
+        var asset = new Asset()
+        {
+            Name = assetData.Name,
+            Path = assetData.Path,
+        };
+
+        asset.Create();
+        var createdAsset = await unitOfWork.Assets.InsertAcync(asset);
+        await unitOfWork.SaveAsync();
+
+        return mapper.Map<AssetViewModel>(asset);
     }
 
-    public Task<AssetViewModel> GetByIdAsync(long id)
+    public async Task<bool> DeleteAsync(long id)
     {
-        throw new NotImplementedException();
+        var existAsset = await unitOfWork.Assets.SelectAcync(id)
+            ?? throw new NotFoundException("Asset is not found");
+
+        await unitOfWork.Assets.DropAcync(existAsset);
+        await unitOfWork.SaveAsync(); 
+        
+        return true;
     }
 
-    public Task<AssetViewModel> UploadAsync(AssetCreateModel model)
+    public async Task<AssetViewModel> GetByIdAsync(long id)
     {
-        throw new NotImplementedException();
+        var existAsset = await unitOfWork.Assets.SelectAcync(id)
+           ?? throw new NotFoundException("Asset is not found");
+
+        return mapper.Map<AssetViewModel>(existAsset);
     }
 }

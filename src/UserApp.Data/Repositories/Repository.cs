@@ -26,7 +26,7 @@ public class Repository<T> : IRepository<T> where T : Auditable
         throw new NotImplementedException();
     }
 
-    public Task<T> SelectAcync(T entity)
+    public Task<T> SelectAcync(long id)
     {
         throw new NotImplementedException();
     }
