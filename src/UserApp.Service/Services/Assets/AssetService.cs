@@ -20,7 +20,7 @@ public class AssetService(IMapper mapper, IUnitOfWork unitOfWork) : IAssetServic
         };
 
         asset.Create();
-        var createdAsset = await unitOfWork.Assets.InsertAcync(asset);
+        var createdAsset = await unitOfWork.Assets.InsertAsync(asset);
         await unitOfWork.SaveAsync();
 
         return mapper.Map<AssetViewModel>(asset);
@@ -28,10 +28,10 @@ public class AssetService(IMapper mapper, IUnitOfWork unitOfWork) : IAssetServic
 
     public async Task<bool> DeleteAsync(long id)
     {
-        var existAsset = await unitOfWork.Assets.SelectAcync(id)
+        var existAsset = await unitOfWork.Assets.SelectAsync(asset => asset.Id == id)
             ?? throw new NotFoundException("Asset is not found");
 
-        await unitOfWork.Assets.DropAcync(existAsset);
+        await unitOfWork.Assets.DropAsync(existAsset);
         await unitOfWork.SaveAsync(); 
         
         return true;
@@ -39,7 +39,7 @@ public class AssetService(IMapper mapper, IUnitOfWork unitOfWork) : IAssetServic
 
     public async Task<AssetViewModel> GetByIdAsync(long id)
     {
-        var existAsset = await unitOfWork.Assets.SelectAcync(id)
+        var existAsset = await unitOfWork.Assets.SelectAsync(asset => asset.Id == id)
            ?? throw new NotFoundException("Asset is not found");
 
         return mapper.Map<AssetViewModel>(existAsset);
