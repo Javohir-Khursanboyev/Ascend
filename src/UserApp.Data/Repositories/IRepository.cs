@@ -8,7 +8,7 @@ public interface IRepository<T> where T : Auditable
     Task<T> UpdateAcync(T entity);
     Task<T> DeleteAcync(T entity);
     Task<T> DropAcync(T entity);
-    Task<T> SelectAcync(T entity);
+    Task<T> SelectAcync(long id);
     Task<IEnumerable<T>> SelectAllAsEnumerableAsync(T entity);
     Task<IQueryable<T>> SelectAllAsQueryable(T entity);
 }

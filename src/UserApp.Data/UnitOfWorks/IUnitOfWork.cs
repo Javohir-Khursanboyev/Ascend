@@ -8,4 +8,5 @@ public interface IUnitOfWork:IDisposable
 {
     IRepository<User> Users { get; }
     IRepository<Asset> Assets { get; }
+    Task<bool> SaveAsync();
 }
