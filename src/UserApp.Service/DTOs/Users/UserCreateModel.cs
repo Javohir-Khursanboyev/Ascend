@@ -1,10 +1,9 @@
-﻿using UserApp.Domain.Commons;
-using UserApp.Domain.Enitites.Commons;
+﻿using UserApp.Domain.Enitites.Commons;
 using UserApp.Domain.Enums;
 
-namespace UserApp.Domain.Enitites.Users;
+namespace UserApp.Service.DTOs.Users;
 
-public class User : Auditable
+public class UserCreateModel
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
@@ -12,5 +11,4 @@ public class User : Auditable
     public string Password { get; set; }
     public UserRole Role { get; set; }
     public long? AssetId { get; set; }
-    public Asset Asset { get; set; }
 }
