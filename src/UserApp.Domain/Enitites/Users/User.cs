@@ -1,6 +1,6 @@
-﻿using UserApp.Domain.Commons;
+﻿using UserApp.Domain.Enums;
+using UserApp.Domain.Commons;
 using UserApp.Domain.Enitites.Commons;
-using UserApp.Domain.Enums;
 
 namespace UserApp.Domain.Enitites.Users;
 
