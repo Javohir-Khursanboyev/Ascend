@@ -2,6 +2,7 @@
 using UserApp.Service.Helpers;
 using UserApp.Service.Services.Assets;
 using UserApp.Service.Services.Users;
+using UserApp.WebApi.Middlewares;
 
 namespace UserApp.WebApi.Extensions;
 
@@ -16,11 +17,11 @@ public static class ServicesCollectionExtension
 
     public static void AddExceptionHandlers(this IServiceCollection services)
     {
-        //services.AddExceptionHandler<NotFoundExceptionHandler>();
-        //services.AddExceptionHandler<AlreadyExistExceptionHandler>();
-        //services.AddExceptionHandler<ArgumentIsNotValidExceptionHandler>();
-        //services.AddExceptionHandler<CustomExceptionHandler>();
-        //services.AddExceptionHandler<InternalServerExceptionHandler>();
+        services.AddExceptionHandler<NotFoundExceptionHandler>();
+        services.AddExceptionHandler<AlreadyExistExceptionHandler>();
+        services.AddExceptionHandler<ArgumentIsNotValidExceptionHandler>();
+        services.AddExceptionHandler<CustomExceptionHandler>();
+        services.AddExceptionHandler<InternalServerExceptionHandler>();
     }
 
     public static void InjectEnvironmentItems(this WebApplication app)

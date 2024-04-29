@@ -5,10 +5,12 @@ using UserApp.WebApi.Models;
 
 namespace UserApp.WebApi.Controllers;
 
+[Route("api/[controller]")]
+[ApiController]
 public class UsersController(IUserService userService) : Controller
 {
     [HttpPost()]
-    public async ValueTask<IActionResult> PictureUploadAsync(UserCreateModel userCreateModel)
+    public async Task<IActionResult> PostAsync(UserCreateModel userCreateModel)
     {
         return Ok(new Response
         {

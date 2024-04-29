@@ -13,7 +13,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(
-    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDbConnection")));
+    options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultDbConnection")));
+
+builder.Services.AddExceptionHandlers();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddServices();
