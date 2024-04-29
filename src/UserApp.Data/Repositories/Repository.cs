@@ -22,7 +22,6 @@ public class Repository<T> : IRepository<T> where T : Auditable
 
     public async Task<T> UpdateAsync(T entity)
     {
-        entity.UpdatedAt = DateTime.UtcNow;
         set.Update(entity);
         return await Task.FromResult(entity);
     }
@@ -30,7 +29,6 @@ public class Repository<T> : IRepository<T> where T : Auditable
     public async Task<T> DeleteAsync(T entity)
     {
         entity.IsDeleted = true;
-        entity.DeletedAt = DateTime.UtcNow;
         set.Update(entity);
         return await Task.FromResult(entity);
     }
