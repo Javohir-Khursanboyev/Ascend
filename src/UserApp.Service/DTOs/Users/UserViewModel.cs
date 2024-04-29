@@ -1,4 +1,5 @@
 ﻿using UserApp.Domain.Enums;
+using UserApp.Service.DTOs.Assets;
 
 namespace UserApp.Service.DTOs.Users;
 
@@ -9,5 +10,5 @@ public class UserViewModel
     public string LastName { get; set; }
     public string Email { get; set; }
     public UserRole Role { get; set; }
-    public long? AssetId { get; set; }
+    public AssetViewModel Asset { get; set; }
 }

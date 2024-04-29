@@ -1,8 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using UserApp.Data.Contexts;
-using UserApp.Service.Helpers;
 using UserApp.Service.Mappers;
 using UserApp.WebApi.Extensions;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +22,15 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-HttpContextHelper.ContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
-EnvironmentHelper.WebRootPath = Path.GetFullPath("wwwroot");
+app.InjectEnvironmentItems();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<AppDbContext>();
+    dbContext.Database.EnsureCreated();
+    dbContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -38,5 +44,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseExceptionHandler();
 
 app.Run();

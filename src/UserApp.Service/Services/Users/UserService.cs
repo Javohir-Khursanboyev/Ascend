@@ -5,6 +5,7 @@ using UserApp.Service.DTOs.Users;
 using UserApp.Service.Exceptions;
 using UserApp.Domain.Enitites.Users;
 using UserApp.Service.Configurations;
+using UserApp.Service.Helpers;
 
 namespace UserApp.Service.Services.Users;
 
@@ -13,7 +14,6 @@ public class UserService(IMapper mapper, IUnitOfWork unitOfWork) : IUserService
     public async ValueTask<UserViewModel> CreateAsync(UserCreateModel model)
     {
         var existUser = await unitOfWork.Users.SelectAsync(user => user.Email == model.Email);
-
         if(existUser is not null)
         {
             if (existUser.IsDeleted)
@@ -23,6 +23,7 @@ public class UserService(IMapper mapper, IUnitOfWork unitOfWork) : IUserService
         }
 
         var mapperUser = mapper.Map<User>(model);
+        mapperUser.Password = PasswordHasher.Hash(model.Password);
         mapperUser.Create();
         var createdUser = await unitOfWork.Users.InsertAsync(mapperUser);
         await unitOfWork.SaveAsync();
