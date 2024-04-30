@@ -5,9 +5,9 @@ namespace UserApp.Service.Services.Users;
 
 public interface IUserService
 {
-    ValueTask<UserViewModel> CreateAsync(UserCreateModel model);
-    ValueTask<UserViewModel> UpdateAsync(long id, UserUpdateModel model);
-    ValueTask<bool> DeleteAsync(long id);
-    ValueTask<UserViewModel> GetByIdAsync(long id);
-    ValueTask<IEnumerable<UserViewModel>> GetAllAsync(PaginationParams @params, Filter filter, string search = null);
+    Task<UserViewModel> CreateAsync(UserCreateModel model);
+    Task<UserViewModel> UpdateAsync(long id, UserUpdateModel model, bool isUsesDeleted = false);
+    Task<bool> DeleteAsync(long id);
+    Task<UserViewModel> GetByIdAsync(long id);
+    Task<IEnumerable<UserViewModel>> GetAllAsync(PaginationParams @params, Filter filter, string search = null);
 }

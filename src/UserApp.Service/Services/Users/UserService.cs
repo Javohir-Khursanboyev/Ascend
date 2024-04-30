@@ -1,26 +1,26 @@
 ﻿using AutoMapper;
+using UserApp.Service.Helpers;
 using UserApp.Data.UnitOfWorks;
 using UserApp.Service.Extensions;
 using UserApp.Service.DTOs.Users;
 using UserApp.Service.Exceptions;
 using UserApp.Domain.Enitites.Users;
 using UserApp.Service.Configurations;
-using UserApp.Service.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserApp.Service.Services.Users;
 
 public class UserService(IMapper mapper, IUnitOfWork unitOfWork) : IUserService
 {
-    public async ValueTask<UserViewModel> CreateAsync(UserCreateModel model)
+    public async Task<UserViewModel> CreateAsync(UserCreateModel model)
     {
         var existUser = await unitOfWork.Users.SelectAsync(user => user.Email == model.Email);
-        if(existUser is not null)
-        {
-            if (existUser.IsDeleted)
-                return await UpdateAsync(existUser.Id, mapper.Map<UserUpdateModel>(model));
+        
+        if(existUser is not null && existUser.IsDeleted)
+            return await UpdateAsync(existUser.Id, mapper.Map<UserUpdateModel>(model), true);
 
+        else if (existUser is not null && !existUser.IsDeleted)
             throw new AlreadyExistException("User is already exist");
-        }
 
         var mapperUser = mapper.Map<User>(model);
         mapperUser.Password = PasswordHasher.Hash(model.Password);
@@ -31,23 +31,57 @@ public class UserService(IMapper mapper, IUnitOfWork unitOfWork) : IUserService
         return mapper.Map<UserViewModel>(createdUser);
     }
 
-    public ValueTask<bool> DeleteAsync(long id)
+    public async Task<UserViewModel> UpdateAsync(long id, UserUpdateModel model, bool isUsesDeleted = false)
     {
-        throw new NotImplementedException();
+        var existUser = new User();
+        if (isUsesDeleted)
+            existUser = await unitOfWork.Users.SelectAsync(u => u.Id == id);
+        else
+            existUser = await unitOfWork.Users.SelectAsync(u => u.Id == id && !u.IsDeleted)
+                ?? throw new NotFoundException("User is not found");
+
+        var alreadyExistUser = await unitOfWork.Users.SelectAsync(u => u.Email == model.Email && !u.IsDeleted && u.Id != id);
+        if (alreadyExistUser is not null)
+            throw new AlreadyExistException("User is already exist");
+
+        mapper.Map(model, existUser);
+        existUser.Update();
+        var updateModel = await unitOfWork.Users.UpdateAsync(existUser);
+        await unitOfWork.SaveAsync();
+
+        return mapper.Map<UserViewModel> (updateModel);
     }
 
-    public ValueTask<IEnumerable<UserViewModel>> GetAllAsync(PaginationParams @params, Filter filter, string search = null)
+    public async Task<bool> DeleteAsync(long id)
     {
-        throw new NotImplementedException();
+        var existUser = await unitOfWork.Users.SelectAsync(user => user.Id == id && !user.IsDeleted)
+            ?? throw new NotFoundException("User is not found");
+
+        existUser.Delete();
+        await unitOfWork.Users.DeleteAsync(existUser);
+        return true;
     }
 
-    public ValueTask<UserViewModel> GetByIdAsync(long id)
+    public async Task<UserViewModel> GetByIdAsync(long id)
     {
-        throw new NotImplementedException();
+        var existUser = await unitOfWork.Users.SelectAsync(expression: u => u.Id == id && !u.IsDeleted, includes: ["Role", "Asset"])
+            ?? throw new NotFoundException("User is not found");
+
+        return mapper.Map<UserViewModel>(existUser);
     }
 
-    public ValueTask<UserViewModel> UpdateAsync(long id, UserUpdateModel model)
+    public async Task<IEnumerable<UserViewModel>> GetAllAsync(PaginationParams @params, Filter filter, string search = null)
     {
-        throw new NotImplementedException();
+        var users = unitOfWork.Users.
+            SelectAsQueryable(expression: u => !u.IsDeleted, includes: ["Role", "Asset"], isTracked:false).
+            OrderBy(filter);
+
+        if (!string.IsNullOrEmpty(search))
+            users = users.Where(p =>
+             p.FirstName.ToLower().Contains(search.ToLower()) ||
+             p.LastName.ToLower().Contains(search.ToLower()));
+
+        var paginateUsers = await users.ToPaginateAsQueryable(@params).ToListAsync();
+        return mapper.Map<IEnumerable<UserViewModel>>(paginateUsers);   
     }
 }
