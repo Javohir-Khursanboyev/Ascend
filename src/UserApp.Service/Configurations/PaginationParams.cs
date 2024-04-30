@@ -2,6 +2,13 @@
 
 public class PaginationParams
 {
-    public int PageIndex { get; set; } = 1;
-    public int PageSize { get; set; } = 20;
+    public PaginationParams(int pageIndex, int pageSize)
+    {
+        PageIndex = pageIndex;
+        PageSize = pageSize;
+    }
+    public PaginationParams() { }
+ 
+    public int PageIndex { get; set; }
+    public int PageSize { get; set; } 
 }

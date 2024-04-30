@@ -9,7 +9,7 @@ public interface IRepository<T> where T : Auditable
     Task<T> UpdateAsync(T entity);
     Task<T> DeleteAsync(T entity);
     Task<T> DropAsync(T entity);
-    Task<T> SelectAsync(Expression<Func<T, bool>> expression, string[] includes = null);
+    Task<T> SelectAsync(Expression<Func<T, bool>> expression, string[] includes = null, bool isTracked = true);
     Task<IEnumerable<T>> SelectAsEnumerableAsync(
         Expression<Func<T, bool>> expression = null,
         string[] includes = null,

@@ -64,7 +64,7 @@ public class UserService(IMapper mapper, IUnitOfWork unitOfWork) : IUserService
 
     public async Task<UserViewModel> GetByIdAsync(long id)
     {
-        var existUser = await unitOfWork.Users.SelectAsync(expression: u => u.Id == id && !u.IsDeleted, includes: ["Role", "Asset"])
+        var existUser = await unitOfWork.Users.SelectAsync(expression: u => u.Id == id && !u.IsDeleted, includes: ["Asset"], isTracked:false)
             ?? throw new NotFoundException("User is not found");
 
         return mapper.Map<UserViewModel>(existUser);
@@ -73,7 +73,7 @@ public class UserService(IMapper mapper, IUnitOfWork unitOfWork) : IUserService
     public async Task<IEnumerable<UserViewModel>> GetAllAsync(PaginationParams @params, Filter filter, string search = null)
     {
         var users = unitOfWork.Users.
-            SelectAsQueryable(expression: u => !u.IsDeleted, includes: ["Role", "Asset"], isTracked:false).
+            SelectAsQueryable(expression: u => !u.IsDeleted, includes: ["Asset"], isTracked:false).
             OrderBy(filter);
 
         if (!string.IsNullOrEmpty(search))
