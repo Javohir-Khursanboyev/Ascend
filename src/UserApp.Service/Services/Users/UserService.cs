@@ -7,10 +7,13 @@ using UserApp.Service.Exceptions;
 using UserApp.Domain.Enitites.Users;
 using UserApp.Service.Configurations;
 using Microsoft.EntityFrameworkCore;
+using UserApp.Service.DTOs.Assets;
+using UserApp.Service.Services.Assets;
+using UserApp.Domain.Enitites.Commons;
 
 namespace UserApp.Service.Services.Users;
 
-public class UserService(IMapper mapper, IUnitOfWork unitOfWork) : IUserService
+public class UserService(IMapper mapper, IUnitOfWork unitOfWork, IAssetService assetService) : IUserService
 {
     public async Task<UserViewModel> CreateAsync(UserCreateModel model)
     {
@@ -83,5 +86,37 @@ public class UserService(IMapper mapper, IUnitOfWork unitOfWork) : IUserService
 
         var paginateUsers = await users.ToPaginateAsQueryable(@params).ToListAsync();
         return mapper.Map<IEnumerable<UserViewModel>>(paginateUsers);   
+    }
+
+    public async Task<UserViewModel> UploadPictureAsync(long id,AssetCreateModel picture)
+    {
+        await unitOfWork.BeginTransactionAsync();
+        var existUser = await unitOfWork.Users.SelectAsync(u => u.Id == id && !u.IsDeleted, ["Asset"])
+            ?? throw new NotFoundException("User is not found");
+
+        var createdPicture = await assetService.UploadAsync(picture);
+        existUser.Update();
+        existUser.AssetId = createdPicture.Id;
+        existUser.Asset = mapper.Map<Asset>(createdPicture);
+        await unitOfWork.Users.UpdateAsync(existUser);
+        await unitOfWork.SaveAsync();
+        await unitOfWork.CommitTransactionAsync();
+
+        return mapper.Map<UserViewModel>(existUser);
+    }
+
+    public async Task<UserViewModel> DeletePictureAsync(long id)
+    {
+        await unitOfWork.BeginTransactionAsync();
+        var existUser = await unitOfWork.Users.SelectAsync(u => u.Id == id && !u.IsDeleted, ["Asset"])
+            ?? throw new NotFoundException("User is not found");
+
+        await assetService.DeleteAsync(Convert.ToInt64(existUser.AssetId));
+        existUser.AssetId = null;
+        await unitOfWork.Users.UpdateAsync(existUser);
+        await unitOfWork.SaveAsync();
+        await unitOfWork.CommitTransactionAsync();
+
+        return mapper.Map<UserViewModel>(existUser);
     }
 }

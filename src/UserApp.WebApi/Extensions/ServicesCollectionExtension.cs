@@ -1,5 +1,4 @@
 ﻿using UserApp.Data.UnitOfWorks;
-using UserApp.Service.Configurations;
 using UserApp.Service.Helpers;
 using UserApp.Service.Services.Assets;
 using UserApp.Service.Services.Users;
@@ -35,8 +34,7 @@ public static class ServicesCollectionExtension
         //EnvironmentHelper.EmailPassword = app.Configuration.GetSection("Email:Password").Value;
         //EnvironmentHelper.SmtpPort = app.Configuration.GetSection("Email:Port").Value;
         //EnvironmentHelper.SmtpHost = app.Configuration.GetSection("Email:Host").Value;
-        var defaultParams = new PaginationParams(
-            Convert.ToInt32(app.Configuration.GetSection("DefaultPaginationParams:PageIndex").Value), 
-            Convert.ToInt32(app.Configuration.GetSection("DefaultPaginationParams:PageSize").Value));
+        EnvironmentHelper.DefaultPageSize = Convert.ToInt32(app.Configuration.GetSection("DefaultPaginationParams:PageSize").Value);
+        EnvironmentHelper.DefaultPageIndex = Convert.ToInt32(app.Configuration.GetSection("DefaultPaginationParams:PageIndex").Value);
     }
 }
