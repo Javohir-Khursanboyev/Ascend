@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserApp.Service.Configurations;
+using UserApp.Service.DTOs.Assets;
 using UserApp.Service.DTOs.Users;
 using UserApp.Service.Services.Users;
 using UserApp.WebApi.Models;
 
 namespace UserApp.WebApi.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class UsersController(IUserService userService) : Controller
+public class UsersController(IUserService userService) : BaseController
 {
     [HttpPost()]
     public async Task<IActionResult> PostAsync(UserCreateModel userCreateModel)
@@ -65,6 +64,28 @@ public class UsersController(IUserService userService) : Controller
             StatusCode = 200,
             Message = "Success",
             Data = await userService.GetAllAsync(@params, filter, search)
+        });
+    }
+
+    [HttpPost("{id:long}/pictures/upload")]
+    public async ValueTask<IActionResult> PictureUploadAsync(long id,AssetCreateModel asset)
+    {
+        return Ok(new Response
+        {
+            StatusCode = 200,
+            Message = "Success",
+            Data = await userService.UploadPictureAsync(id, asset)
+        });
+    }
+
+    [HttpPost("{id:long}/pictures/delete")]
+    public async ValueTask<IActionResult> PictureDeleteAsync(long id)
+    {
+        return Ok(new Response
+        {
+            StatusCode = 200,
+            Message = "Success",
+            Data = await userService.DeletePictureAsync(id)
         });
     }
 }
