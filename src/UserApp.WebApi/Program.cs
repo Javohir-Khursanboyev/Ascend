@@ -18,6 +18,8 @@ builder.Services.AddDbContext<AppDbContext>(
 builder.Services.AddExceptionHandlers();
 builder.Services.AddProblemDetails();
 
+builder.Services.ConfigureSwagger();
+builder.Services.AddJwtService(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddServices();
 

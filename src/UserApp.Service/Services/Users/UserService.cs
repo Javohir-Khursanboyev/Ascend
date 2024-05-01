@@ -10,10 +10,14 @@ using Microsoft.EntityFrameworkCore;
 using UserApp.Service.DTOs.Assets;
 using UserApp.Service.Services.Assets;
 using UserApp.Domain.Enitites.Commons;
+using UserApp.Service.DTOs.Auths;
 
 namespace UserApp.Service.Services.Users;
 
-public class UserService(IMapper mapper, IUnitOfWork unitOfWork, IAssetService assetService) : IUserService
+public class UserService(
+    IMapper mapper, 
+    IUnitOfWork unitOfWork, 
+    IAssetService assetService) : IUserService
 {
     public async Task<UserViewModel> CreateAsync(UserCreateModel model)
     {
@@ -118,5 +122,22 @@ public class UserService(IMapper mapper, IUnitOfWork unitOfWork, IAssetService a
         await unitOfWork.CommitTransactionAsync();
 
         return mapper.Map<UserViewModel>(existUser);
+    }
+
+    public async Task<LoginViewModel> LoginAsync(LoginCreateModel login)
+    {
+        var existUser = await unitOfWork.Users.
+            SelectAsync(expression: user => user.Email == login.Email && !user.IsDeleted, includes: ["Asset"])
+            ?? throw new ArgumentIsNotValidException("Email or Password is not valid");
+
+        if(!PasswordHasher.Verify(login.Password, existUser.Password))
+            throw new ArgumentIsNotValidException("Email or Password is not valid");
+
+        var loginViewModel = new LoginViewModel
+        {
+            User = mapper.Map<UserViewModel>(existUser),
+            Token = AuthHelper.GenerateToken(existUser)
+        };
+        return loginViewModel;
     }
 }
