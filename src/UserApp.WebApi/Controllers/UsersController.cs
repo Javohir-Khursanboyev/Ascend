@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UserApp.Service.Configurations;
 using UserApp.Service.DTOs.Assets;
 using UserApp.Service.DTOs.Users;
@@ -9,6 +10,7 @@ namespace UserApp.WebApi.Controllers;
 
 public class UsersController(IUserService userService) : BaseController
 {
+    [AllowAnonymous]
     [HttpPost()]
     public async Task<IActionResult> PostAsync(UserCreateModel userCreateModel)
     {
