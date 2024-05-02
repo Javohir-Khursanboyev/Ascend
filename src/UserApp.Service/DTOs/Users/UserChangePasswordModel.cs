@@ -1,4 +1,6 @@
-﻿namespace UserApp.Service.DTOs.Users;
+﻿using UserApp.Domain.Commons;
+
+namespace UserApp.Service.DTOs.Users;
 
 public class UserChangePasswordModel
 {

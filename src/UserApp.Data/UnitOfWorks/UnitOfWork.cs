@@ -1,10 +1,8 @@
-﻿using UserApp.Data.Contexts;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using UserApp.Data.Contexts;
 using UserApp.Data.Repositories;
-using UserApp.Domain.Enitites.Users;
 using UserApp.Domain.Enitites.Commons;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore;
-using System.Threading;
+using UserApp.Domain.Enitites.Users;
 
 namespace UserApp.Data.UnitOfWorks;
 
@@ -16,11 +14,14 @@ public class UnitOfWork : IUnitOfWork
 
     public IRepository<Asset> Assets { get; }
 
+    public IRepository<Role> Roles {  get; }
+
     public UnitOfWork(AppDbContext context)
     {
         this.context = context;
         Users = new Repository<User>(context);
         Assets = new Repository<Asset>(context);
+        Roles = new Repository<Role>(context);
     }
     public void Dispose()
     {
