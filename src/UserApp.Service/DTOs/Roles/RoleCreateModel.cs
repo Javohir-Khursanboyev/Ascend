@@ -1,4 +1,6 @@
-﻿namespace UserApp.Service.DTOs.Roles;
+﻿using UserApp.Domain.Commons;
+
+namespace UserApp.Service.DTOs.Roles;
 
 public class RoleCreateModel
 {
