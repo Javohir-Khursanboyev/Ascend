@@ -142,4 +142,23 @@ public class UserService(
         };
         return loginViewModel;
     }
+
+    public async Task<UserViewModel> ChangePasswordAsync(UserChangePasswordModel model)
+    {
+        var existUser = await unitOfWork.Users.
+            SelectAsync(expression: user => user.Id == model.UserId && !user.IsDeleted, includes: ["Asset"])
+            ?? throw new NotFoundException("User is not found");
+
+        if (PasswordHasher.Verify(model.OldPassword, existUser.Password))
+            throw new ArgumentIsNotValidException("Password is incorrect");
+
+        if (model.NewPassword != model.ConfirmPassword)
+            throw new ArgumentIsNotValidException("Confirm password is incorrect");
+
+        existUser.Password = PasswordHasher.Hash(model.NewPassword);
+        existUser.Update();
+        await unitOfWork.SaveAsync();
+
+        return mapper.Map<UserViewModel>(existUser);
+    }
 }

@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using UserApp.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using UserApp.Service.Configurations;
-using UserApp.Service.DTOs.Assets;
 using UserApp.Service.DTOs.Users;
+using UserApp.Service.DTOs.Assets;
+using UserApp.Service.Configurations;
 using UserApp.Service.Services.Users;
-using UserApp.WebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace UserApp.WebApi.Controllers;
 
@@ -70,7 +70,7 @@ public class UsersController(IUserService userService) : BaseController
     }
 
     [HttpPost("{id:long}/pictures/upload")]
-    public async ValueTask<IActionResult> PictureUploadAsync(long id,AssetCreateModel asset)
+    public async Task<IActionResult> PictureUploadAsync(long id,AssetCreateModel asset)
     {
         return Ok(new Response
         {
@@ -81,13 +81,24 @@ public class UsersController(IUserService userService) : BaseController
     }
 
     [HttpPost("{id:long}/pictures/delete")]
-    public async ValueTask<IActionResult> PictureDeleteAsync(long id)
+    public async Task<IActionResult> PictureDeleteAsync(long id)
     {
         return Ok(new Response
         {
             StatusCode = 200,
             Message = "Success",
             Data = await userService.DeletePictureAsync(id)
+        });
+    }
+
+    [HttpPatch("{id:long}/change-password")]
+    public async Task<IActionResult> ChangePasswordAsync(UserChangePasswordModel model)
+    {
+        return Ok(new Response
+        {
+            StatusCode = 200,
+            Message = "Success",
+            Data = await userService.ChangePasswordAsync(model)
         });
     }
 }

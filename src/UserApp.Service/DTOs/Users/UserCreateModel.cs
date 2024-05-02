@@ -1,5 +1,4 @@
-﻿using UserApp.Domain.Enitites.Commons;
-using UserApp.Domain.Enums;
+﻿using UserApp.Domain.Enums;
 
 namespace UserApp.Service.DTOs.Users;
 
