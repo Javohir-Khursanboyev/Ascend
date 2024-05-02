@@ -11,14 +11,20 @@ public static class FileHelper
         if (!Directory.Exists(directoryPath))
             Directory.CreateDirectory(directoryPath);
 
-        var fullPath = Path.Combine(directoryPath, file.FileName);
+        var fileName = MakeFileName(file.FileName);
+        var fullPath = Path.Combine(directoryPath, fileName);
 
-        var fileStream = new FileStream(fullPath, FileMode.OpenOrCreate);
-        var memoryStream = new MemoryStream();
-        file.CopyTo(memoryStream);
-        var bytes = memoryStream.ToArray();
-        await fileStream.WriteAsync(bytes);
+        var stream = File.Create(fullPath);
+        await file.CopyToAsync(stream);
+        stream.Close();
 
-        return (fullPath, file.FileName);
+        return (fullPath, fileName);
+    }
+
+    private static string MakeFileName(string fileName)
+    {
+        string fileExtension = Path.GetExtension(fileName);
+        string guid = Guid.NewGuid().ToString();
+        return $"{guid}{fileName}";
     }
 }

@@ -102,6 +102,7 @@ public class UserService(
         existUser.Update();
         existUser.AssetId = createdPicture.Id;
         existUser.Asset = mapper.Map<Asset>(createdPicture);
+        existUser.Update();
         await unitOfWork.Users.UpdateAsync(existUser);
         await unitOfWork.SaveAsync();
         await unitOfWork.CommitTransactionAsync();
@@ -117,6 +118,7 @@ public class UserService(
 
         await assetService.DeleteAsync(Convert.ToInt64(existUser.AssetId));
         existUser.AssetId = null;
+        existUser.Update();
         await unitOfWork.Users.UpdateAsync(existUser);
         await unitOfWork.SaveAsync();
         await unitOfWork.CommitTransactionAsync();
