@@ -15,4 +15,5 @@ public interface IUserService
     Task<UserViewModel> UploadPictureAsync(long id,AssetCreateModel picture);
     Task<UserViewModel> DeletePictureAsync(long id);
     Task<LoginViewModel> LoginAsync(LoginCreateModel login);
+    Task<UserViewModel> ChangePasswordAsync(UserChangePasswordModel model);
 }
