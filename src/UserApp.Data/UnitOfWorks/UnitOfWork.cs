@@ -16,12 +16,15 @@ public class UnitOfWork : IUnitOfWork
 
     public IRepository<Role> Roles {  get; }
 
+    public IRepository<Permission> Permissions {  get; }
+
     public UnitOfWork(AppDbContext context)
     {
         this.context = context;
         Users = new Repository<User>(context);
         Assets = new Repository<Asset>(context);
         Roles = new Repository<Role>(context);
+        Permissions = new Repository<Permission>(context);
     }
     public void Dispose()
     {
