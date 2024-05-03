@@ -10,6 +10,7 @@ public interface IUnitOfWork:IDisposable
     IRepository<Asset> Assets { get; }
     IRepository<Role> Roles { get; }
     IRepository<Permission> Permissions { get; }
+    IRepository<RolePermission> RolePermissions { get; }
     Task<bool> SaveAsync();
     Task BeginTransactionAsync();
     Task CommitTransactionAsync();

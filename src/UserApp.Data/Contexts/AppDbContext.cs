@@ -12,4 +12,5 @@ public class AppDbContext:DbContext
     public DbSet<Asset> Assets { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Permission> Permissions { get; set; }
+    public DbSet<RolePermission> RolePermissions { get; set; }
 }
