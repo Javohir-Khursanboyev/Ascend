@@ -37,6 +37,9 @@ public class PermissionService(
         var elreadyExistPermission = await unitOfWork.Permissions.
             SelectAsync(p => p.Action.ToLower() == model.Action.ToLower() && p.Controller.ToLower() == model.Controller.ToLower() && p.Id != id);
 
+        if (elreadyExistPermission is not null)
+            throw new AlreadyExistException("Permission is already exist");
+
         mapper.Map(model, existPermission);
         existPermission.Update();
         var updatePermission = await unitOfWork.Permissions.UpdateAsync(existPermission); 
