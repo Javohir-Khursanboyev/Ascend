@@ -5,6 +5,9 @@ using System.Text;
 using UserApp.Data.UnitOfWorks;
 using UserApp.Service.Helpers;
 using UserApp.Service.Services.Assets;
+using UserApp.Service.Services.Permissions;
+using UserApp.Service.Services.RolePermissions;
+using UserApp.Service.Services.Roles;
 using UserApp.Service.Services.Users;
 using UserApp.WebApi.Middlewares;
 
@@ -17,6 +20,9 @@ public static class ServicesCollectionExtension
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAssetService, AssetService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<IRolePermissionService, RolePermissionService>();
     }
 
     public static void AddExceptionHandlers(this IServiceCollection services)
