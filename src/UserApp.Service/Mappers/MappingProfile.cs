@@ -5,6 +5,7 @@ using UserApp.Service.DTOs.Assets;
 using UserApp.Domain.Enitites.Users;
 using UserApp.Domain.Enitites.Commons;
 using UserApp.Service.DTOs.Permissions;
+using UserApp.Service.DTOs.RolePermissions;
 
 namespace UserApp.Service.Mappers;
 
@@ -25,5 +26,9 @@ public class MappingProfile : Profile
         CreateMap<Permission, PermissionCreateModel>().ReverseMap();
         CreateMap<Permission, PermissionUpdateModel>().ReverseMap();
         CreateMap<PermissionViewModel, Permission>().ReverseMap();
+
+        CreateMap<RolePermission, RolePermissionCreateModel>().ReverseMap();
+        CreateMap<RolePermission, RolePermissionUpdateModel>().ReverseMap();
+        CreateMap<RolePermissionViewModel, RolePermission>().ReverseMap();
     }
 }
