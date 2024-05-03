@@ -53,12 +53,12 @@ public class RolePermissionService(
         if (alreadyExistRolePermission is not null)
             throw new AlreadyExistException("Role permission is already exist");
 
-        var rolePermission = mapper.Map<RolePermission>(model);
-        rolePermission.Update();
-        rolePermission.Role = existRole;
-        rolePermission.Permission = existPermission;
+        mapper.Map(model, existRolePermission);
+        existRolePermission.Update();
+        existRolePermission.Role = existRole;
+        existRolePermission.Permission = existPermission;
 
-        var updatedPermission = await unitOfWork.RolePermissions.UpdateAsync(rolePermission);
+        var updatedPermission = await unitOfWork.RolePermissions.UpdateAsync(existRolePermission);
         await unitOfWork.SaveAsync();
 
         return mapper.Map<RolePermissionViewModel>(updatedPermission);
