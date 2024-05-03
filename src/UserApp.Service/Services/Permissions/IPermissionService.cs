@@ -1,14 +1,13 @@
-﻿using UserApp.Service.DTOs.Roles;
-using UserApp.Service.Configurations;
+﻿using UserApp.Service.Configurations;
 using UserApp.Service.DTOs.Permissions;
 
 namespace UserApp.Service.Services.Permissions;
 
 public interface IPermissionService
 {
-    Task<RoleViewModel> CreateAsync(PermissionCreateModel model);
-    Task<RoleViewModel> UpdateAsync(long id, PermissionUpdateModel model);
+    Task<PermissionViewModel> CreateAsync(PermissionCreateModel model);
+    Task<PermissionViewModel> UpdateAsync(long id, PermissionUpdateModel model);
     Task<bool> DeleteAsync(long id);
-    Task<RoleViewModel> GetByIdAsync(long id);
-    Task<IEnumerable<RoleViewModel>> GetAllAsync(PaginationParams @params, Filter filter, string search = null);
+    Task<PermissionViewModel> GetByIdAsync(long id);
+    Task<IEnumerable<PermissionViewModel>> GetAllAsync(PaginationParams @params, Filter filter, string search = null);
 }
