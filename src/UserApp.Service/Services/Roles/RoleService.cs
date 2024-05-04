@@ -6,15 +6,19 @@ using UserApp.Service.Extensions;
 using UserApp.Domain.Enitites.Users;
 using Microsoft.EntityFrameworkCore;
 using UserApp.Service.Configurations;
+using UserApp.Service.Validators.Roles;
 
 namespace UserApp.Service.Services.Roles;
 
 public class RoleService(
     IMapper mapper, 
-    IUnitOfWork unitOfWork) : IRoleService
+    IUnitOfWork unitOfWork,
+    RoleCreateModelValidator createModelValidator,
+    RoleUpdateModelValidator updateModelValidator) : IRoleService
 {
     public async Task<RoleViewModel> CreateAsync(RoleCreateModel model)
     {
+        await createModelValidator.EnsureValidatedAsync(model);
         var existRole = await unitOfWork.Roles.SelectAsync(role => role.Name.ToLower() == model.Name.ToLower());
         if (existRole is not null)
             throw new AlreadyExistException("Role is already exist");
@@ -29,6 +33,7 @@ public class RoleService(
 
     public async Task<RoleViewModel> UpdateAsync(long id, RoleUpdateModel model)
     {
+        await updateModelValidator.EnsureValidatedAsync(model);
         var existRole = await unitOfWork.Roles.SelectAsync(role => role.Id == id)
             ?? throw new NotFoundException("Role is not found");
 

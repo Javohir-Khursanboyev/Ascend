@@ -11,7 +11,7 @@ public class AssetCreateModelValidator : AbstractValidator<AssetCreateModel>
         RuleFor(asset => asset.FileType)
             .NotNull()
             .IsInEnum()
-            .WithMessage((asset => $"{nameof(asset.FileType)} is not specified"));
+            .WithMessage(asset => $"{nameof(asset.FileType)} is not specified");
 
         RuleFor(asset => asset.File)
             .Must(ValidationHelper.IsFileValid);
