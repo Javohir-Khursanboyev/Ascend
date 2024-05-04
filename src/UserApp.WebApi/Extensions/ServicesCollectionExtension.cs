@@ -12,6 +12,7 @@ using UserApp.Service.Services.Users;
 using UserApp.Service.Validators.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using UserApp.Service.Validators.Assets;
+using UserApp.Service.Validators.Roles;
 
 namespace UserApp.WebApi.Extensions;
 
@@ -42,6 +43,9 @@ public static class ServicesCollectionExtension
         services.AddTransient<UserUpdateModelValidator>();
 
         services.AddTransient<AssetCreateModelValidator>();
+
+        services.AddTransient<RoleCreateModelValidator>();
+        services.AddTransient<RoleUpdateModelValidator>();
     }
 
     public static void InjectEnvironmentItems(this WebApplication app)
