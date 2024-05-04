@@ -6,15 +6,19 @@ using UserApp.Service.Configurations;
 using UserApp.Service.DTOs.Permissions;
 using UserApp.Service.Exceptions;
 using UserApp.Service.Extensions;
+using UserApp.Service.Validators.Permissions;
 
 namespace UserApp.Service.Services.Permissions;
 
 public class PermissionService(
     IMapper mapper,
-    IUnitOfWork unitOfWork) : IPermissionService
+    IUnitOfWork unitOfWork,
+    PermissionCreateModelValidator createModelValidator,
+    PermissionUpdateModelValidator updateModelValidator) : IPermissionService
 {
     public async Task<PermissionViewModel> CreateAsync(PermissionCreateModel model)
     {
+        await createModelValidator.EnsureValidatedAsync(model);
         var existPermission = await unitOfWork.Permissions.
             SelectAsync(p => p.Action.ToLower() == model.Action.ToLower() && p.Controller.ToLower() == model.Controller.ToLower());
 
@@ -31,6 +35,7 @@ public class PermissionService(
 
     public async Task<PermissionViewModel> UpdateAsync(long id, PermissionUpdateModel model)
     {
+        await updateModelValidator.EnsureValidatedAsync(model);
         var existPermission = await unitOfWork.Permissions.SelectAsync(p => p.Id == id)
             ?? throw new NotFoundException("Permission is not found");
 
