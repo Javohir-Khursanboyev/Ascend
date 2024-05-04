@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.AspNetCore.Http;
+using System.Text.RegularExpressions;
 
 namespace UserApp.Service.Helpers;
 
@@ -33,5 +34,12 @@ public static class ValidationHelper
 
         string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
         return Regex.IsMatch(email, pattern);
+    }
+
+    public static bool IsFileValid(IFormFile file)
+    {
+        if (file is null) return false;
+
+        return true;
     }
 }

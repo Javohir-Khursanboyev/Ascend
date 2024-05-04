@@ -11,6 +11,7 @@ using UserApp.Service.Exceptions;
 using UserApp.Service.Extensions;
 using UserApp.Service.Helpers;
 using UserApp.Service.Services.Assets;
+using UserApp.Service.Validators.Assets;
 using UserApp.Service.Validators.Users;
 
 namespace UserApp.Service.Services.Users;
@@ -20,7 +21,9 @@ public class UserService(
     IUnitOfWork unitOfWork, 
     IAssetService assetService,
     UserCreateModelValidator createModelValidator,
-    UserUpdateModelValidator updateModelValidator) : IUserService
+    UserUpdateModelValidator updateModelValidator,
+    AssetCreateModelValidator assetValidator,
+    UserChangePasswordModelValidator changePasswordValidator) : IUserService
 {
     public async Task<UserViewModel> CreateAsync(UserCreateModel model)
     {
@@ -77,7 +80,7 @@ public class UserService(
 
     public async Task<UserViewModel> GetByIdAsync(long id)
     {
-        var existUser = await unitOfWork.Users.SelectAsync(expression: u => u.Id == id && !u.IsDeleted, includes: ["Asset"], isTracked:false)
+        var existUser = await unitOfWork.Users.SelectAsync(expression: u => u.Id == id && !u.IsDeleted, includes: ["Asset","Role"], isTracked:false)
             ?? throw new NotFoundException("User is not found");
 
         return mapper.Map<UserViewModel>(existUser);
@@ -86,7 +89,7 @@ public class UserService(
     public async Task<IEnumerable<UserViewModel>> GetAllAsync(PaginationParams @params, Filter filter, string search = null)
     {
         var users = unitOfWork.Users.
-            SelectAsQueryable(expression: u => !u.IsDeleted, includes: ["Asset"], isTracked:false).
+            SelectAsQueryable(expression: u => !u.IsDeleted, includes: ["Asset", "Role"], isTracked:false).
             OrderBy(filter);
 
         if (!string.IsNullOrEmpty(search))
@@ -100,8 +103,9 @@ public class UserService(
 
     public async Task<UserViewModel> UploadPictureAsync(long id,AssetCreateModel picture)
     {
+        await assetValidator.EnsureValidatedAsync(picture);
         await unitOfWork.BeginTransactionAsync();
-        var existUser = await unitOfWork.Users.SelectAsync(u => u.Id == id && !u.IsDeleted, ["Asset"])
+        var existUser = await unitOfWork.Users.SelectAsync(u => u.Id == id && !u.IsDeleted, ["Asset", "Role"])
             ?? throw new NotFoundException("User is not found");
 
         var createdPicture = await assetService.UploadAsync(picture);
@@ -119,7 +123,7 @@ public class UserService(
     public async Task<UserViewModel> DeletePictureAsync(long id)
     {
         await unitOfWork.BeginTransactionAsync();
-        var existUser = await unitOfWork.Users.SelectAsync(u => u.Id == id && !u.IsDeleted, ["Asset"])
+        var existUser = await unitOfWork.Users.SelectAsync(u => u.Id == id && !u.IsDeleted, ["Asset", "Role"])
             ?? throw new NotFoundException("User is not found");
 
         await assetService.DeleteAsync(Convert.ToInt64(existUser.AssetId));
@@ -135,7 +139,7 @@ public class UserService(
     public async Task<LoginViewModel> LoginAsync(LoginCreateModel login)
     {
         var existUser = await unitOfWork.Users.
-            SelectAsync(expression: user => user.Email == login.Email && !user.IsDeleted, includes: ["Asset"])
+            SelectAsync(expression: user => user.Email == login.Email && !user.IsDeleted, includes: ["Asset", "Role"])
             ?? throw new ArgumentIsNotValidException("Email or Password is not valid");
 
         if(!PasswordHasher.Verify(login.Password, existUser.Password))
@@ -151,8 +155,9 @@ public class UserService(
 
     public async Task<UserViewModel> ChangePasswordAsync(UserChangePasswordModel model)
     {
+        await changePasswordValidator.EnsureValidatedAsync(model);
         var existUser = await unitOfWork.Users.
-            SelectAsync(expression: user => user.Id == model.UserId && !user.IsDeleted, includes: ["Asset"])
+            SelectAsync(expression: user => user.Id == model.Id && !user.IsDeleted, includes: ["Asset", "Role"])
             ?? throw new NotFoundException("User is not found");
 
         if (PasswordHasher.Verify(model.OldPassword, existUser.Password))
