@@ -1,26 +1,30 @@
 ﻿using AutoMapper;
-using UserApp.Service.Helpers;
+using Microsoft.EntityFrameworkCore;
 using UserApp.Data.UnitOfWorks;
-using UserApp.Service.Extensions;
-using UserApp.Service.DTOs.Users;
-using UserApp.Service.Exceptions;
+using UserApp.Domain.Enitites.Commons;
 using UserApp.Domain.Enitites.Users;
 using UserApp.Service.Configurations;
-using Microsoft.EntityFrameworkCore;
 using UserApp.Service.DTOs.Assets;
-using UserApp.Service.Services.Assets;
-using UserApp.Domain.Enitites.Commons;
 using UserApp.Service.DTOs.Auths;
+using UserApp.Service.DTOs.Users;
+using UserApp.Service.Exceptions;
+using UserApp.Service.Extensions;
+using UserApp.Service.Helpers;
+using UserApp.Service.Services.Assets;
+using UserApp.Service.Validators.Users;
 
 namespace UserApp.Service.Services.Users;
 
 public class UserService(
     IMapper mapper, 
     IUnitOfWork unitOfWork, 
-    IAssetService assetService) : IUserService
+    IAssetService assetService,
+    UserCreateModelValidator createModelValidator,
+    UserUpdateModelValidator updateModelValidator) : IUserService
 {
     public async Task<UserViewModel> CreateAsync(UserCreateModel model)
     {
+        await createModelValidator.EnsureValidatedAsync(model);
         var existUser = await unitOfWork.Users.SelectAsync(user => user.Email == model.Email);
         
         if(existUser is not null && existUser.IsDeleted)
@@ -29,10 +33,11 @@ public class UserService(
         else if (existUser is not null && !existUser.IsDeleted)
             throw new AlreadyExistException("User is already exist");
 
-        var mapperUser = mapper.Map<User>(model);
-        mapperUser.Password = PasswordHasher.Hash(model.Password);
-        mapperUser.Create();
-        var createdUser = await unitOfWork.Users.InsertAsync(mapperUser);
+        var mappedUser = mapper.Map<User>(model);
+        mappedUser.Password = PasswordHasher.Hash(model.Password);
+        mappedUser.Create();
+        mappedUser.RoleId = await GetRoleIdAsync();
+        var createdUser = await unitOfWork.Users.InsertAsync(mappedUser);
         await unitOfWork.SaveAsync();
 
         return mapper.Map<UserViewModel>(createdUser);
@@ -40,6 +45,7 @@ public class UserService(
 
     public async Task<UserViewModel> UpdateAsync(long id, UserUpdateModel model, bool isUsesDeleted = false)
     {
+        await updateModelValidator.EnsureValidatedAsync(model);
         var existUser = new User();
         if (isUsesDeleted)
             existUser = await unitOfWork.Users.SelectAsync(u => u.Id == id);
@@ -160,5 +166,13 @@ public class UserService(
         await unitOfWork.SaveAsync();
 
         return mapper.Map<UserViewModel>(existUser);
+    }
+
+    private async Task<long> GetRoleIdAsync()
+    {
+        var role = await unitOfWork.Roles.SelectAsync(role => role.Name.ToLower() == Constants.UserRoleName)
+            ?? throw new NotFoundException($"Role is not found with this name {Constants.UserRoleName}");
+
+        return role.Id;
     }
 }

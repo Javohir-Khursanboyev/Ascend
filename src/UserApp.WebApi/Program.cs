@@ -1,7 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using UserApp.Data.Contexts;
 using UserApp.Service.Mappers;
 using UserApp.WebApi.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +22,7 @@ builder.Services.ConfigureSwagger();
 builder.Services.AddJwtService(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddServices();
+builder.Services.AddValidators();
 
 builder.Services.AddHttpContextAccessor();
 
