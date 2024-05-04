@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using UserApp.Data.UnitOfWorks;
 using UserApp.Service.Helpers;
 using UserApp.Service.Services.Assets;
 using UserApp.Service.Services.Permissions;
 using UserApp.Service.Services.RolePermissions;
+using UserApp.WebApi.Middlewares;
 using UserApp.Service.Services.Roles;
 using UserApp.Service.Services.Users;
-using UserApp.WebApi.Middlewares;
+using UserApp.Service.Validators.Users;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace UserApp.WebApi.Extensions;
 
@@ -32,6 +33,12 @@ public static class ServicesCollectionExtension
         services.AddExceptionHandler<ArgumentIsNotValidExceptionHandler>();
         services.AddExceptionHandler<CustomExceptionHandler>();
         services.AddExceptionHandler<InternalServerExceptionHandler>();
+    }
+
+    public static void AddValidators(this IServiceCollection services)
+    {
+        services.AddTransient<UserCreateModelValidator>();
+        services.AddTransient<UserUpdateModelValidator>();
     }
 
     public static void InjectEnvironmentItems(this WebApplication app)

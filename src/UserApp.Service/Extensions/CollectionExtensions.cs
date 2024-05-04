@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System.Linq.Expressions;
-using UserApp.Service.Configurations;
-using UserApp.Service.Exceptions;
 using UserApp.Service.Helpers;
+using System.Linq.Expressions;
+using UserApp.Service.Exceptions;
+using UserApp.Service.Configurations;
 
 namespace UserApp.Service.Extensions;
 
