@@ -10,4 +10,5 @@ public interface IRolePermissionService
     Task<bool> DeleteAsync(long id);
     Task<RolePermissionViewModel> GetByIdAsync(long id);
     Task<IEnumerable<RolePermissionViewModel>> GetAllAsync(PaginationParams @params, Filter filter, string search = null);
+    bool CheckRolePermission(string role, string action, string controller);
 }

@@ -27,7 +27,7 @@ builder.Services.AddValidators();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
-
+app.AddInjectHelper();
 app.InjectEnvironmentItems();
 
 using (var scope = app.Services.CreateScope())

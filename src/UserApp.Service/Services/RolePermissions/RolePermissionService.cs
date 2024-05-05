@@ -104,4 +104,16 @@ public class RolePermissionService(
         var paginateRolePermissions = await rolePermissions.ToPaginateAsQueryable(@params).ToListAsync();
         return mapper.Map<IEnumerable<RolePermissionViewModel>>(paginateRolePermissions);
     }
+
+    public bool CheckRolePermission(string role, string action, string controller)
+    {
+        var rolePermissions = unitOfWork.RolePermissions.SelectAsQueryable(expression: rp =>
+            rp.Role.Name.ToLower() == role.ToLower() &&
+            rp.Permission.Action.ToLower() == action.ToLower() &&
+            rp.Permission.Controller.ToLower() == controller.ToLower(), isTracked: false);
+
+        if (rolePermissions.Any()) return true;
+
+        return false; 
+    }
 }
