@@ -15,6 +15,7 @@ using UserApp.Service.Validators.Assets;
 using UserApp.Service.Validators.Roles;
 using UserApp.Service.Validators.Permissions;
 using UserApp.Service.Validators.RolePermissions;
+using UserApp.WebApi.Helpers;
 
 namespace UserApp.WebApi.Extensions;
 
@@ -43,6 +44,7 @@ public static class ServicesCollectionExtension
     {
         services.AddTransient<UserCreateModelValidator>();
         services.AddTransient<UserUpdateModelValidator>();
+        services.AddTransient<UserChangePasswordModelValidator>();
 
         services.AddTransient<AssetCreateModelValidator>();
 
@@ -54,6 +56,12 @@ public static class ServicesCollectionExtension
 
         services.AddTransient<RolePermissionCreateModelValidator>();
         services.AddTransient<RolePermissionUpdateModelValidator>();
+    }
+
+    public static void AddInjectHelper(this WebApplication serviceProvider)
+    {
+        var scope = serviceProvider.Services.CreateScope();
+        InjectHelper.RolePermissionService = scope.ServiceProvider.GetRequiredService<IRolePermissionService>();
     }
 
     public static void InjectEnvironmentItems(this WebApplication app)

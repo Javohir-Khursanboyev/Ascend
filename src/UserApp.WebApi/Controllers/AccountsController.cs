@@ -8,7 +8,6 @@ namespace UserApp.WebApi.Controllers;
 
 public class AccountsController(IUserService userService):ControllerBase
 {
-    [AllowAnonymous]
     [HttpGet("login")]
     public async Task<IActionResult> LoginAsync(LoginCreateModel createModel)
     {
