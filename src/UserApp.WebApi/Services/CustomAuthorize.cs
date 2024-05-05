@@ -3,8 +3,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using UserApp.Service.Services.RolePermissions;
+using UserApp.Service.Exceptions;
+using UserApp.WebApi.Models;
 
 namespace UserApp.WebApi.Services;
 
@@ -27,7 +28,7 @@ public class CustomAuthorize : Attribute, IAuthorizationFilter
         string authorizationHeader = context.HttpContext.Request.Headers["Authorization"];
         if (string.IsNullOrEmpty(authorizationHeader))
         {
-            context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
+            SetStatusCodeResult(context);
             return;
         }
 
@@ -37,8 +38,21 @@ public class CustomAuthorize : Attribute, IAuthorizationFilter
 
         if (!rolePermissionService.CheckRolePermission(role, action, controller))
         {
-            context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
+            SetStatusCodeResult(context);
             return;
         }
+    }
+
+    private void SetStatusCodeResult(AuthorizationFilterContext context)
+    {
+        var exception = new CustomException(403, "You do not have permission for this method");
+        context.Result = new ObjectResult(new Response
+        {
+            StatusCode = exception.StatusCode,
+            Message = exception.Message
+        })
+        {
+            StatusCode = exception.StatusCode
+        };
     }
 }
