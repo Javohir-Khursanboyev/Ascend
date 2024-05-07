@@ -25,6 +25,6 @@ public static class FileHelper
     {
         string fileExtension = Path.GetExtension(fileName);
         string guid = Guid.NewGuid().ToString();
-        return $"{guid}{fileName}";
+        return $"{guid}{fileExtension}";
     }
 }
