@@ -4,6 +4,12 @@ namespace UserApp.Service.Configurations;
 
 public class PaginationParams
 {
-    public int PageIndex { get; set; } = EnvironmentHelper.DefaultPageIndex;
-    public int PageSize { get; set; } = EnvironmentHelper.DefaultPageSize;
+    public PaginationParams()
+    {
+        PageIndex = EnvironmentHelper.DefaultPageIndex;
+        PageSize =  EnvironmentHelper.DefaultPageSize;
+    }
+
+    public int PageIndex { get; set; } 
+    public int PageSize { get; set; } 
 }
